@@ -56,18 +56,14 @@ document.addEventListener("DOMContentLoaded", function () {
         // Split the expression into operands and operator
         const regex = /([+\-*/])/g;;
         const tokens = expression.split(regex).filter(token => token.trim() !== '');
-
-        // Handle unary minus (negation) for the first token
-        if (tokens.length > 0 && tokens[0] === '-') {
-            tokens[0] = '-' + tokens[1];
-            tokens.splice(1, 1);
+       //handle negative numbers
+        for (let i = 0; i < tokens.length; i++) {
+            if (tokens[i] === '-' && (i === 0 || ['+', '-', '*', '/'].includes(tokens[i - 1]))) {
+                tokens[i + 1] = '-' + tokens[i + 1];
+                tokens.splice(i, 1);
+            }
         }
         
-        else if (tokens.length > 2 && tokens[1] === '*' && tokens[2] === '-') {
-            // Handle subtraction following multiplication for cases like 5*-8
-            tokens.splice(0, 3, (parseFloat(tokens[0]) * -parseFloat(tokens[3])).toString());
-        }
-      
         // Perform the calculation based on BODMAS rules
         while (tokens.includes('*') || tokens.includes('/')) {
             const index = tokens.findIndex(token => token === '*' || token === '/');
